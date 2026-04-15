@@ -6,7 +6,8 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: "API Key not configured in Vercel" });
     }
 
-    const url = `https://gnews.io/api/v4/search?q=${q}&lang=en&max=10&apikey=${apiKey}`;
+    const url = // Change this line inside api/news.js
+const url = `https://gnews.io/api/v4/search?q=ServiceNow -Gartner&lang=en&max=50&apikey=${apiKey}`;
 
     try {
         const response = await fetch(url);
