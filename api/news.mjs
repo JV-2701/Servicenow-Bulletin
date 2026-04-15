@@ -9,7 +9,7 @@ export default async function handler(req, res) {
 
     // Clean query - ensure no spaces at ends
     const cleanQuery = encodeURIComponent(q.trim());
-    const url = `https://gnews.io/api/v4/search?q=ServiceNow -concert -insurance&lang=en&max=50&apikey=${apiKey}`;
+  const url = `https://gnews.io/api/v4/search?q=ServiceNow -concert -insurance&lang=en&max=50&expand=content&apikey=${apiKey}`;
 
     try {
         const response = await fetch(url);
