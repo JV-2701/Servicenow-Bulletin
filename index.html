@@ -272,35 +272,49 @@
         };
 
         // ─── NEW: Detailed Classification Logic ────────────────────────
-    function classifyArticle(article) {
+function classifyArticle(article) {
     const title = article.title.toLowerCase();
     const desc = (article.description || '').toLowerCase();
-    const source = (article.source?.name || '').toLowerCase();
+    const combined = title + " " + desc;
 
-    // 1. Official SN (Direct sources or high-level corporate announcements)
-    if (source.includes('servicenow') || source.includes('press') || /partners|joins|acquires|announces/.test(title)) return 'official';
+    // 1. FINANCIALS (High Priority - specific stock/market terms)
+    if (/\b(stock|earnings|revenue|nasdaq|nyse|valuation|shares|fiscal|quarterly|profit)\b/i.test(combined)) {
+        return 'financials';
+    }
 
-    // 2. Certifications (Broaden to include 'training', 'learning', 'exam')
-    if (/cert|exam|voucher|learning|training|badge|csa|cis|cad|pathway/.test(title + desc)) return 'certs';
+    // 2. OFFICIAL SN (Strategic moves, acquisitions, press releases)
+    if (/\b(acquires|acquisition|partnership|strategic alliance|announces|jointly|collaboration)\b/i.test(combined)) {
+        return 'official';
+    }
 
-    // 3. Platform & Releases (Include 'update', 'feature', 'now platform', 'vancouver', 'washington', 'xanadu')
-    if (/release|update|feature|version|upgrade|patch|xanadu|washington|vancouver|platform/.test(title + desc)) return 'platform';
+    // 3. CERTIFICATIONS (Strict match - must be about learning/exams)
+    // Using \b ensures it matches "cert" or "certification" but not "concert"
+    if (/\b(csa|cad|cis|certification|exam|voucher|learning|training|course|badge|certified)\b/i.test(combined)) {
+        return 'certs';
+    }
 
-    // 4. AI & Automation (Broaden to 'agent', 'bot', 'intelligence', 'assist')
-    if (/ai|artificial|intelligence|assist|bot|agent|automation|machine|generative|llm/.test(title + desc)) return 'ai';
+    // 4. AI & AUTOMATION (The "GenAI" focus)
+    if (/\b(ai|genai|llm|generative|machine learning|now assist|copilot|automation|agentic|intelligence)\b/i.test(combined)) {
+        return 'ai';
+    }
 
-    // 5. Financials (Include 'stock', 'revenue', 'growth', 'earnings', 'nasdaq')
-    if (/stock|revenue|earnings|financial|profit|investor|nasdaq|quarterly|price/.test(title + desc)) return 'financials';
+    // 5. PLATFORM & RELEASES (Specific release names)
+    if (/\b(xanadu|washington|vancouver|utah|release|upgrade|patch|feature|platform)\b/i.test(combined)) {
+        return 'platform';
+    }
 
-    // 6. Developer Hub (Include 'api', 'code', 'script', 'integration', 'studio')
-    if (/api|code|script|integration|dev|studio|portal|workflow/.test(title + desc)) return 'developer';
-    
-    // 7. Events (Include 'summit', 'world', 'forum', 'webinar')
-    if (/summit|world|forum|webinar|event|community/.test(title + desc)) return 'events';
+    // 6. DEVELOPER HUB (Technical tools)
+    if (/\b(api|script|integration|rest|developer|studio|cli|workflow|flow designer)\b/i.test(combined)) {
+        return 'developer';
+    }
+
+    // 7. EVENTS
+    if (/\b(summit|knowledge|world forum|event|webinar|meetup)\b/i.test(combined)) {
+        return 'events';
+    }
 
     return 'general';
 }
-
         async function doFetch() {
             const container = document.getElementById('newsContainer');
             const infoText = document.getElementById('resultsInfo');
