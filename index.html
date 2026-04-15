@@ -302,7 +302,7 @@
             infoText.innerText = "Connecting to the ecosystem pulse...";
             
             try {
-                const response = await fetch('/api/news?q=ServiceNow -Gartner'); // Broader query
+               const response = await fetch('/api/news.mjs?q=ServiceNow'); // Broader query
                 const data = await response.json();
                 
                 if (data.articles) {
