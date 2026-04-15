@@ -272,27 +272,34 @@
         };
 
         // ─── NEW: Detailed Classification Logic ────────────────────────
-        function classifyArticle(article) {
-            const title = article.title.toLowerCase();
-            const desc = (article.description || '').toLowerCase();
-            const source = (article.source?.name || '').toLowerCase();
+    function classifyArticle(article) {
+    const title = article.title.toLowerCase();
+    const desc = (article.description || '').toLowerCase();
+    const source = (article.source?.name || '').toLowerCase();
 
-            // 1. Check for official sources first
-            if (source.includes('servicenow blog') || source.includes('servicenow press') || source.includes('investor.servicenow.com')) return 'official';
+    // 1. Official SN (Direct sources or high-level corporate announcements)
+    if (source.includes('servicenow') || source.includes('press') || /partners|joins|acquires|announces/.test(title)) return 'official';
 
-            // 2. High priority keywords
-            if (/\bcbap\b|\bcsa\b|\bcas\b|certification|learning path|exam voucher/.test(title + desc)) return 'certs';
-            if (/xanadu|vancouver|washington|washington d.c|vancouver release|feature rollout|platform enhancement/.test(title)) return 'platform';
-            if (/now assist|generative ai|generative|artificial intelligence|machine learning|automation|copilot/.test(title + desc)) return 'ai';
-            if (/earnings|stock performance|financial results|investor call|market analysis|growth trajectory|nasdaq:now/.test(title + desc)) return 'financials';
-            if (/know|summit|community update|developer meetup|hackerthon|mvp program/.test(title)) return 'events';
-            if (/api|scripting|rest|graphql|development pattern|now learning|customization guide/.test(title + desc)) return 'developer';
+    // 2. Certifications (Broaden to include 'training', 'learning', 'exam')
+    if (/cert|exam|voucher|learning|training|badge|csa|cis|cad|pathway/.test(title + desc)) return 'certs';
 
-            // 3. Fallback to general official mention in non-official sources
-            if (/\bpress release\b|\bannouncement\b/.test(title) && title.includes('servicenow')) return 'official';
+    // 3. Platform & Releases (Include 'update', 'feature', 'now platform', 'vancouver', 'washington', 'xanadu')
+    if (/release|update|feature|version|upgrade|patch|xanadu|washington|vancouver|platform/.test(title + desc)) return 'platform';
 
-            return 'general'; // Everything else is 'General Ecosystem'
-        }
+    // 4. AI & Automation (Broaden to 'agent', 'bot', 'intelligence', 'assist')
+    if (/ai|artificial|intelligence|assist|bot|agent|automation|machine|generative|llm/.test(title + desc)) return 'ai';
+
+    // 5. Financials (Include 'stock', 'revenue', 'growth', 'earnings', 'nasdaq')
+    if (/stock|revenue|earnings|financial|profit|investor|nasdaq|quarterly|price/.test(title + desc)) return 'financials';
+
+    // 6. Developer Hub (Include 'api', 'code', 'script', 'integration', 'studio')
+    if (/api|code|script|integration|dev|studio|portal|workflow/.test(title + desc)) return 'developer';
+    
+    // 7. Events (Include 'summit', 'world', 'forum', 'webinar')
+    if (/summit|world|forum|webinar|event|community/.test(title + desc)) return 'events';
+
+    return 'general';
+}
 
         async function doFetch() {
             const container = document.getElementById('newsContainer');
